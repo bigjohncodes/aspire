@@ -14,7 +14,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      # Step 2: Set up AWS CLI
+      # Step 2: Set up AWS CLI credentials using GitHub secrets
       - name: Set up AWS CLI
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -22,13 +22,14 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: 'us-west-2'  # Specify your AWS region
 
-      # Step 3: Install AWS CLI (if not using AWS Action)
+      # Step 3: Install AWS CLI using the official AWS method
       - name: Install AWS CLI
         run: |
-          sudo apt-get update
-          sudo apt-get install awscli
+          curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+          unzip awscliv2.zip
+          sudo ./aws/install
 
-      # Step 4: Sync the repository files with the S3 bucket
+      # Step 4: Upload files to S3
       - name: Upload files to S3
         run: |
           aws s3 sync . s3://your-bucket-name/ --exclude ".git/*" --content-type "text/html"
